@@ -38,7 +38,6 @@ All of these services provide **free tiers** suitable for development.
 4. Click Create API Key.  
 5. Save the generated key as **GROQ_API_KEY**
 
----
 
 #### SerpApi API Key (for Google Search)
 
@@ -48,12 +47,10 @@ All of these services provide **free tiers** suitable for development.
 4. In the left-hand menu, click API Keys.  
 5. Save the generated key as **SERP_API_KEY**.
 
----
 
 #### DPLA API Key (for Primary Source Archives)
 
-1. Get an API key by sending a HTTP POST request.
-  -- Run the following command in your cmd
+1. Get an API key by sending a HTTP POST request,Run the following command in your cmd
    ```bash
    # Replace EXAMPLE@gmail.com with your gmail
    curl -v --ssl-no-revoke -XPOST https://api.dp.la/v2/api_key/EXAMPLE@gmail.com 

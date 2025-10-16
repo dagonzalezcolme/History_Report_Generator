@@ -21,3 +21,31 @@ generator_output = (
 checker = CheckerAgent()
 res = checker.evaluate(generator_input, generator_output)
 print(json.dumps(asdict(res), indent=2))
+
+
+
+
+
+
+class Pipeline:
+    def __init__(self):
+        self.complete = False
+
+    def run(self):
+    '''Planner Agent'''
+
+    '''Checker Agent'''
+        checker = CheckerAgent()
+        res = checker.evaluate(generator_input, generator_output)
+        print(json.dumps(asdict(res), indent=2))
+    '''Search Agent'''
+
+    '''Report Agent'''
+
+    '''Checker Agent'''
+        checker = CheckerAgent()
+        res = checker.evaluate(generator_input, generator_output)
+        print(json.dumps(asdict(res), indent=2))
+
+agent_pipeline = Pipeline()
+agent_pipeline.run()

@@ -9,7 +9,7 @@ Original file is located at
 
 #!pip install langgraph langchain_openai reportlab langchain-groq
 
-'''
+
 import os, re
 from typing import Dict, TypedDict, Optional, List, Any, Annotated
 from langgraph.graph import START, StateGraph, END
@@ -27,7 +27,7 @@ from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
 from reportlab.lib.units import inch
 from google.colab import files
-'''
+
 
 GROQ_API_KEY = userdata.get('GROQ_API_KEY')
 os.environ['GROQ_API_KEY'] = GROQ_API_KEY
@@ -42,37 +42,38 @@ class ReportState(TypedDict):
     formatted_text: Optional[str]
     pdf_path: Optional[str]
     final_response: Optional[str]
+    
 class report_agent:
   def formatted_report(content:str, filename: str) -> str:
-  file_path = f"/content/{filename}"
+    file_path = f"/content/{filename}"
 
-  doc = SimpleDocTemplate(file_path, pagesize=letter,
-                          leftMargin= 1*inch, bottomMargin= 1*inch,
-                          topMargin = 1*inch, rightMargin = 1*inch)
+    doc = SimpleDocTemplate(file_path, pagesize=letter,
+                            leftMargin= 1*inch, bottomMargin= 1*inch,
+                            topMargin = 1*inch, rightMargin = 1*inch)
 
-  styles = getSampleStyleSheet()
-  title_style = ParagraphStyle(
-      'CustomTitle',
-      parent=styles['Heading1'],
-      spaceAfter = 30,
-      alignment = 1
-  )
-  body_style = styles['BodyText']
+    styles = getSampleStyleSheet()
+    title_style = ParagraphStyle(
+        'CustomTitle',
+        parent=styles['Heading1'],
+        spaceAfter = 30,
+        alignment = 1
+    )
+    body_style = styles['BodyText']
 
-  story = []
+    story = []
 
-  title = Paragraph("Research Report", title_style)
-  story.append(title)
+    title = Paragraph("Research Report", title_style)
+    story.append(title)
 
-  lines = content.split('\n')
-  for line in lines:
-    line = line.strip()
-    if not line:
-      continue
-    story.append(Paragraph(line, body_style))
+    lines = content.split('\n')
+    for line in lines:
+      line = line.strip()
+      if not line:
+        continue
+      story.append(Paragraph(line, body_style))
 
-  doc.build(story)
-  return file_path
+    doc.build(story)
+    return file_path
 
 def report_workflow():
   graph = StateGraph(ReportState)
@@ -89,7 +90,7 @@ def download_pdf(pdf_path:str):
     print(f"error downloading PDF: {e} ")
 
 
-  def generator_node(state: ReportState) -> ReportState:
+def generator_node(state: ReportState) -> ReportState:
   rewritten_output = state["rewritten_output"]
   prompt = f"""
   You are a report formatter. You take responses that include

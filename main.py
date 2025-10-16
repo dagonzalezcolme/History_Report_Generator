@@ -10,6 +10,7 @@ from dataclasses import asdict
 load_dotenv(dotenv_path=os.path.join(os.path.dirname(__file__), ".env"))
 
 from Checker_Agent import CheckerAgent
+from report_agent import report_workflow
 
 generator_input = ("Create a short history paragraph about 'Saint Lloyd Presbyterian Church Cemetery, Charlotte NC'. "
                     "Use only publicly available sources and state any uncertain dates.")
@@ -41,7 +42,18 @@ class Pipeline:
     '''Search Agent'''
 
     '''Report Agent'''
+        workflow = report_workflow()
+    result = workflow.invoke(sample_input)
 
+    print("\n=== FINAL REPORT ===")
+    print(result["final_response"])
+    print(f"\nPDF saved at: {result['pdf_path']}")
+
+    try:
+        files.download(result["pdf_path"])
+        print("✅ PDF download initiated.")
+    except Exception as e:
+        print(f"⚠️ Could not download PDF automatically: {e}")
     '''Checker Agent'''
         checker = CheckerAgent()
         res = checker.evaluate(generator_input, generator_output)

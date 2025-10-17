@@ -10,7 +10,6 @@ from Research_Planning_Agent import Research_Planning_Agent
 from Researcher_Agent import Researcher_Agent
 from Checker_Agent import CheckerAgent
 from report_agent import report_workflow
-from IPython.display import Image
 
 #1. Define the State for the Graph 
 class AgentState(TypedDict):
@@ -112,12 +111,8 @@ def run_reporter_node(state: AgentState):
 
 
 # 5. Build the Graph 
-def main():
-    print("🔑 Environment variables loaded.")
-    user_query = "Create a comprehensive report on the Apollo 11 mission. Start with a general summary of the mission's objectives and key astronauts involved. Then, find specific primary source documents, like official NASA mission transcripts or original photographs from the landing. Finally, include a summary of recent (post-2020) academic discussions or articles about the scientific and engineering challenges of returning to the moon."
-    print(f"\n Starting research process for query: '{user_query}'")
-
-    # Define the workflow graph
+def build_workflow():
+    """Build and return the compiled workflow graph"""
     workflow = StateGraph(AgentState)
 
     # Add the nodes
@@ -148,11 +143,43 @@ def main():
     )
 
     # Compile the graph
-    app = workflow.compile()
+    return workflow.compile()
 
+
+def visualize_graph(app, output_file="workflow_graph.png"):
+    """Generate and save a visualization of the workflow graph"""
+    try:
+        from IPython.display import Image, display
+        
+        # Generate the graph visualization
+        graph_image = app.get_graph().draw_mermaid_png()
+        
+        # Save to file
+        with open(output_file, "wb") as f:
+            f.write(graph_image)
+        
+        print(f"✅ Graph visualization saved to: {output_file}")
+        
+        # Try to display if in Jupyter
+        try:
+            display(Image(graph_image))
+        except:
+            print("(Display only works in Jupyter notebooks)")
+            
+        return output_file
+    except Exception as e:
+        print(f"⚠️ Could not generate graph visualization: {e}")
+        return None
+
+
+def run_workflow(user_query: str, app=None):
+    """Run the workflow with a given query"""
+    if app is None:
+        app = build_workflow()
     
-    # Run the graph 
+    print(f"\n🚀 Starting research process for query: '{user_query}'")
     print("\n--- [GRAPH] INVOKING THE SUPERVISOR WORKFLOW ---")
+    
     initial_state = {"original_query": user_query}
     
     try:
@@ -163,10 +190,31 @@ def main():
         print(f"\n🎉 Success! Your report has been generated.")
         print(f"📄 You can find it here: {os.path.abspath(pdf_path)}")
         
+        return final_state, pdf_path
+        
     except Exception as e:
         print(f"\n❌ An error occurred during the graph execution: {e}")
         import traceback
         traceback.print_exc()
+        return None, None
+
+
+def main():
+    print("🔑 Environment variables loaded.")
+    
+    # Build the workflow
+    app = build_workflow()
+    
+    # Visualize the graph
+    print("\n📊 Generating workflow visualization...")
+    visualize_graph(app)
+    
+    # Example query
+    user_query = "Create a comprehensive report on the Apollo 11 mission. Start with a general summary of the mission's objectives and key astronauts involved. Then, find specific primary source documents, like official NASA mission transcripts or original photographs from the landing. Finally, include a summary of recent (post-2020) academic discussions or articles about the scientific and engineering challenges of returning to the moon."
+    
+    # Run the workflow
+    run_workflow(user_query, app)
+
 
 if __name__ == "__main__":
     main()

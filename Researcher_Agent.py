@@ -1,5 +1,4 @@
 # Researcher_Agent.py
-from typing import TypedDict, Optional
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_core.tools import Tool
 from langchain_groq import ChatGroq
@@ -25,25 +24,43 @@ chat_groq_llm = ChatGroq(model_name=llm, groq_api_key=GROQ_API_KEY)
 
 def dpla_search(query: str) -> str:
     api_key = DPLA_API_KEY
+    if not api_key:
+        return "DPLA API key not configured."
+
     base_url = "https://api.dp.la/v2/items"
     params = {"q": query, "api_key": api_key, "page_size": 5}
     try:
-        response = requests.get(base_url, params=params)
-        response.raise_for_status()
-        data = response.json()
-        if not data.get("docs"):
-            return "No primary sources found in the DPLA for that query."
-        results = []
-        for item in data["docs"]:
-            title = item.get("sourceResource", {}).get("title", "No Title")
-            provider = item.get("provider", {}).get("name", "Unknown Provider")
-            link = item.get("isShownAt", "No Link")
-            results.append(f"Title: {title}\nProvider: {provider}\nLink: {link}\n---")
-        return "\n".join(results)
+        resp = requests.get(base_url, params=params, timeout=15)
+        resp.raise_for_status()
     except requests.exceptions.RequestException as e:
         return f"Error accessing DPLA API: {e}"
-    except Exception as e:
-        return f"An unexpected error occurred: {e}"
+
+    try:
+        data = resp.json()
+    except ValueError:
+        return "DPLA returned non-JSON response."
+
+    # DPLA v2 often uses 'docs' or 'data' depending on wrapper/version; try both
+    docs = data.get("docs") or data.get("items") or data.get("data") or []
+    if not isinstance(docs, list) or len(docs) == 0:
+        # Attempt to handle slightly different shapes
+        # Example: some DPLA responses put results under 'docs' or 'items'
+        return "No primary sources found in the DPLA for that query."
+
+    results = []
+    for item in docs[:5]:
+        # resiliency for missing nested fields
+        source = item.get("sourceResource") if isinstance(item, dict) else {}
+        title = source.get("title") if isinstance(source, dict) else None
+        if not title:
+            title = item.get("title") or item.get("name") or "No Title"
+
+        provider = (item.get("provider") or {}).get("name") if isinstance(item.get("provider"), dict) else item.get("provider") or "Unknown Provider"
+        link = item.get("isShownAt") or item.get("object") or item.get("url") or "No Link"
+
+        results.append(f"Title: {title}\nProvider: {provider}\nLink: {link}\n---")
+
+    return "\n".join(results)
 
 class DPLASearchSchema(BaseModel):
     query: str

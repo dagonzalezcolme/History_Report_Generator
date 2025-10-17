@@ -1,5 +1,5 @@
 import os
-from typing import TypedDict, Optional, List
+from typing import TypedDict, Optional
 from dotenv import load_dotenv
 
 from langgraph.graph import StateGraph, END
@@ -10,7 +10,6 @@ from Research_Planning_Agent import Research_Planning_Agent
 from Researcher_Agent import Researcher_Agent
 from Checker_Agent import CheckerAgent
 from report_agent import report_workflow
-from IPython.display import Image
 
 #1. Define the State for the Graph 
 class AgentState(TypedDict):
@@ -160,11 +159,11 @@ def main():
         pdf_path = final_state.get("pdf_path")
         
         print("\n--- [GRAPH] PROCESS COMPLETE ---")
-        print(f"\n🎉 Success! Your report has been generated.")
-        print(f"📄 You can find it here: {os.path.abspath(pdf_path)}")
+        print("\n Success! Your report has been generated.")
+        print(f" You can find it here: {os.path.abspath(pdf_path)}")
         
     except Exception as e:
-        print(f"\n❌ An error occurred during the graph execution: {e}")
+        print(f"\n An error occurred during the graph execution: {e}")
         import traceback
         traceback.print_exc()
 

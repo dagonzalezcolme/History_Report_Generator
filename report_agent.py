@@ -14,7 +14,7 @@ load_dotenv()
 
 GROQ_API_KEY = os.getenv('GROQ_API_KEY')
 if not GROQ_API_KEY:
-  raise ValueError("GROQ_API_KEY key not found. Please add it to your .env file.")
+    raise ValueError("GROQ_API_KEY key not found. Please add it to your .env file.")
 
 llm = "meta-llama/llama-4-scout-17b-16e-instruct"
 chat_groq_llm = ChatGroq(model_name=llm, groq_api_key=GROQ_API_KEY)

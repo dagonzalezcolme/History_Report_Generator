@@ -59,7 +59,7 @@ def check_agent_output(agent_input: str, agent_output: str) -> str:
             json_text = text[start:end+1]
             json.loads(json_text)  
             return json_text
-    except:
+    except Exception:
         pass
     # fallback
     return json.dumps({"overall_score": 0.5, "verdict": "questionable", "reasons": [{"type":"llm_failure","message":"Could not parse JSON","severity":"medium"}], "suggested_fixes": [], "evidence_snippets": [], "checks_performed":["basic_check"]})
@@ -147,7 +147,7 @@ class CheckerAgent:
         try:
             parsed = json.loads(check_json)
             fixes = parsed.get("suggested_fixes", [])
-        except:
+        except Exception:
             fixes = []
 
         # Rewrite only if fixes exist

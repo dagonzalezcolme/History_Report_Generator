@@ -26,7 +26,7 @@ class ReportState(TypedDict):
     final_response: Optional[str]
 
 def format_and_create_pdf(content:str, filename: str) -> str:
-    file_path = f"./{filename}"
+    file_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), filename)
 
     doc = SimpleDocTemplate(file_path, pagesize=letter,
                             leftMargin=1*inch, bottomMargin=1*inch,

@@ -155,7 +155,8 @@ def visualize_graph(app, output_file="workflow_graph.png"):
         graph_image = app.get_graph().draw_mermaid_png()
         
         # Save to file
-        with open(output_file, "wb") as f:
+        file_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), output_file)
+        with open(file_path, "wb") as f:
             f.write(graph_image)
         
         print(f"✅ Graph visualization saved to: {output_file}")
